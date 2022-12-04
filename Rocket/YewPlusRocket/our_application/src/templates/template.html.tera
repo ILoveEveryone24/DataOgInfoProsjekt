@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  {% block wasm %}{% endblock wasm %}
+</head>
+
+<body>
+  
+</body>
+  {% block body %}{% endblock body %}
+  {% block wasmscript %}{% endblock wasmscript %}
+</html>

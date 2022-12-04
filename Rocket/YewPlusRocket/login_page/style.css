@@ -1,0 +1,22 @@
+body
+{
+	color:white;
+	background-color: #4C3450;
+}
+
+form
+{
+	text-align:center;
+	border: 2px solid gray;
+}
+
+input
+{
+	padding:1%;
+	margin:1%;
+}
+
+h1
+{
+	text-align:center;
+}

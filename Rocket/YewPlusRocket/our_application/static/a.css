@@ -1,0 +1,27 @@
+.line button
+{
+	width: 80px;
+	height: 80px;
+}
+
+.black_tile
+{
+	background-color: rgba(170, 102, 58, 1);
+}
+
+.white_tile
+{
+	background-color: rgba(240, 217, 181, 1);
+}
+
+.black_tile, .white_tile
+{
+	border-width: 0px;
+	margin: 0px;
+	padding: 0px;
+}
+
+.board
+{
+	text-align: center;
+}

@@ -1,0 +1,12 @@
+{% extends "template" %}
+{% block wasm %}
+<link rel="preload" href="/assets/Yew.wasm" as="fetch" type="application/wasm" crossorigin="">
+<link rel="modulepreload" href="/assets/Yew.js">
+<link rel="stylesheet" href="/assets/style-ad9c54a7c526dffd.css">
+{% endblock wasm %}
+{% block body %}
+<div id="main_container"></div>
+{% endblock body %}
+{% block wasmscript %}
+<script type="module">import init from '/assets/Yew.js';init('/assets/Yew.wasm');</script>
+{% endblock wasmscript %}

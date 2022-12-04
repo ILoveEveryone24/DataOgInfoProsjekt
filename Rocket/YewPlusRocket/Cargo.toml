@@ -1,0 +1,7 @@
+[workspace]
+
+members = [
+  "our_application",
+  "our_application_wasm",
+  "login_page",
+]

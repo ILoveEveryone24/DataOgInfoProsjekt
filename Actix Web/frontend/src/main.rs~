@@ -1,0 +1,979 @@
+
+use gloo_utils::document;
+use yew::prelude::*;
+use gloo::console::log;
+use wasm_bindgen::JsCast;
+use web_sys::{HtmlInputElement, DataTransfer, Element, HtmlImageElement};
+use std::collections::HashMap;
+
+
+enum enumClick
+{
+    //PieceName(xPos, yPos, moveX, moveY, capture?)
+    Clicking,
+    DraggingStart(DragEvent),
+    DraggingOver(DragEvent),
+    Dragging(DragEvent),
+    ClickedMove(DragEvent),
+    ClickedMoveBoard(DragEvent),
+    /*
+    King,
+    Queen,
+    Rook,
+    Bishop,
+    Knight,*/
+    //Pawn,
+}
+
+struct PawnOneBL
+{
+    xMove: i32,
+    yMove: i32,
+}
+
+struct RookBL
+{
+    xMove: i32,
+    yMove: i32,
+}
+
+struct BishopBL
+{
+    xMove: i32,
+    yMove: i32,
+}
+/*
+struct PawnTwoBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnThreeBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnFourBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnFiveBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnSixBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnSevenBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnEightBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+
+
+
+
+struct KnightBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct QueenBL
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+*/
+struct KingBL
+{
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnOneWH
+{
+    xMove: i32,
+    yMove: i32,
+}
+/*
+struct PawnTwoWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnThreeWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnFourWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnFiveWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnSixWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnSevenWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct PawnEightWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct RookWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct BishopWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct KnightWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct QueenWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+
+struct KingWH
+{
+    xPos: i32,
+    yPos: i32,
+    xMove: i32,
+    yMove: i32,
+}
+*/
+
+
+struct Clicker
+{
+    allowClick: bool,
+    clicked: bool,
+    counter: i64,
+    currentDragging: String,
+    pieces: HashMap<String, (i32, i32, String)>,
+    availableMoves: HashMap<i32, (bool, i32, i32)>,
+    availablePieceMoves: Vec<(i32, i32)>,
+
+    pawnOneBL:PawnOneBL,
+    kingBL: KingBL,
+    rookBL: RookBL,
+    bishopBL: BishopBL, 
+    /*pawnTwoBL:PawnTwoBL,
+    pawnThreeBL:PawnThreeBL,
+    pawnFourBL:PawnFourBL,
+    pawnFiveBL:PawnFiveBL,
+    pawnSixBL:PawnFiveBL,
+    pawnSevenBL:PawnSevenBL,
+    pawnEightBL:PawnEightBL,
+    
+    bishopBL:BishopBL,
+    knightBL:KnightBL,
+    queenBL:QueenBL,
+    kingBL:KingBL,
+*/
+    pawnOneWH:PawnOneWH,
+    /*pawnTwoWH:PawnTwoWH,
+    pawnThreeWH:PawnThreeWH,
+    pawnFourWH:PawnFourWH,
+    pawnFiveWH:PawnFiveWH,
+    pawnSixWH:PawnFiveWH,
+    pawnSevenWH:PawnSevenWH,
+    pawnEightWH:PawnEightWH,
+    rookWH:RookWH,
+    bishopWH:BishopWH,
+    knightWH:KnightWH,
+    queenWH:QueenWH,
+    kingWH:KingWH,*/
+}
+
+impl Component for Clicker
+{
+    type Message = enumClick;
+    type Properties = ();
+
+    fn create(_ctx:&Context<Self>) -> Self
+    {
+        
+        let STARTPOS:Vec<Vec<char>> = vec![ vec!['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],
+                                vec!['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'], 
+                                vec!['e';8],vec!['e';8],vec!['e';8],vec!['e';8], 
+                                vec!['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'], 
+                                vec!['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'] ];
+        let mut moves: HashMap<i32, (bool, i32, i32)> = HashMap::with_capacity(64);
+        let mut xPos = 0;
+        let mut yPos = 0;
+        for n in 1..65
+        {
+            moves.insert(
+            n,
+            (false,xPos, yPos));
+            if(xPos < 700)
+            {
+                xPos += 100;
+            }
+            else
+            {
+                yPos += 100;
+                xPos = 0;
+            }
+        }
+
+
+
+        let mut availability: HashMap<i32, (bool, i32, i32)> = HashMap::with_capacity(64);
+        let mut xPos = 0;
+        let mut yPos = 0;
+        Self{
+            allowClick : false,
+            clicked : false, 
+            counter : 1000, 
+            currentDragging: String::new(),
+            pawnOneBL: PawnOneBL{xMove:0, yMove:100},
+            pawnOneWH: PawnOneWH{xMove:0, yMove:100},
+            rookBL: RookBL{xMove:100, yMove:100},
+            kingBL: KingBL{xMove:100, yMove:100},
+            bishopBL: BishopBL{xMove:100, yMove:100,},
+            pieces: HashMap::from(
+            [(String::from("p1"), (0, 100, String::from("images/PawnBL.svg"))),
+            (String::from("p2"), (100, 100, String::from("images/PawnBL.svg"))),
+            (String::from("p3"), (200, 100, String::from("images/PawnBL.svg"))),
+            (String::from("p4"), (300, 100, String::from("images/PawnBL.svg"))),
+            (String::from("p5"), (400, 100, String::from("images/PawnBL.svg"))),
+            (String::from("p6"), (500, 100, String::from("images/PawnBL.svg"))),
+            (String::from("p7"), (600, 100, String::from("images/PawnBL.svg"))),
+            (String::from("p8"), (700, 100, String::from("images/PawnBL.svg"))), 
+
+            (String::from("r1"), (0, 0, String::from("images/RookBL.svg"))), 
+            (String::from("b1"), (300, 400, String::from("images/BishopBL.svg"))), 
+            (String::from("n1"), (100, 0, String::from("images/KnightBL.svg"))), 
+            (String::from("q"),  (300, 0, String::from("images/QueenBL.svg"))), 
+            (String::from("k"),  (400, 0, String::from("images/KingBL.svg"))),
+            (String::from("r2"), (700, 0, String::from("images/RookBL.svg"))), 
+            (String::from("b2"), (500, 0, String::from("images/BishopBL.svg"))), 
+            (String::from("n2"), (600, 0, String::from("images/KnightBL.svg"))),
+
+            (String::from("P1"), (0, 600, String::from("images/PawnWH.svg"))),
+            (String::from("P2"), (100, 600, String::from("images/PawnWH.svg"))),
+            (String::from("P3"), (200, 600, String::from("images/PawnWH.svg"))),
+            (String::from("P4"), (300, 600, String::from("images/PawnWH.svg"))),
+            (String::from("P5"), (400, 600, String::from("images/PawnWH.svg"))),
+            (String::from("P6"), (500, 600, String::from("images/PawnWH.svg"))),
+            (String::from("P7"), (600, 600, String::from("images/PawnWH.svg"))),
+            (String::from("P8"), (700, 600, String::from("images/PawnWH.svg"))),
+
+            (String::from("R1"), (700, 700, String::from("images/RookWH.svg"))), 
+            (String::from("B1"), (500, 700, String::from("images/BishopWH.svg"))), 
+            (String::from("N1"), (600, 700, String::from("images/KnightWH.svg"))), 
+            (String::from("Q"),  (300, 700, String::from("images/QueenWH.svg"))), 
+            (String::from("K"),  (400, 700, String::from("images/KingWH.svg"))),
+            (String::from("R2"), (0, 700, String::from("images/RookWH.svg"))), 
+            (String::from("B2"), (200, 700, String::from("images/BishopWH.svg"))), 
+            (String::from("N2"), (100, 700, String::from("images/KnightWH.svg")))]),
+            //Fix this
+            availableMoves: moves,
+            availablePieceMoves: Vec::new(),
+            /*
+            bishopBL:BishopBL{xPos:, yPos:100, xMove, yMove},
+            knightBL:KnightBL{xPos:, yPos:100, xMove, yMove},
+            queenBL:QueenBL{xPos:, yPos:100, xMove, yMove},
+            bishopWH:BishopWH{xPos:, yPos, xMove, yMove},
+            knightWH:KnightWH{xPos:, yPos, xMove, yMove},
+            queenWH:QueenWH{xPos:, yPos, xMove, yMove},*/
+        }
+}
+
+
+
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool
+    {
+        self.availablePieceMoves = Vec::new();
+        for(key, value) in self.pieces.iter()
+        {
+            self.availablePieceMoves.push((value.0, value.1));
+        }
+
+        
+        match msg
+        {
+            enumClick::Clicking => {
+                //self.xPos += 100;
+                if(self.clicked == false)
+                {
+                    self.clicked = true;
+                    self.counter = 5;
+                    true
+                }
+                else
+                {
+                    self.clicked = false;
+                    self.counter = 1000;
+                    true
+                }
+                
+            }
+
+            enumClick::DraggingStart(e) =>
+            {
+                //Move them and snap them into place
+                //Show moves based on their ID
+                //e.target().unwrap().unchecked_into::<HtmlInputElement>().set_draggable(true);
+                //e.data_transfer().unwrap().set_drop_effect("move");
+                //e.data_transfer().unwrap().set_effect_allowed("all");
+                //e.target().unwrap().style();
+                //let thiss: Element = document().create_element("Jonh").unwrap();
+                //e.data_transfer().unwrap().set_drag_image(&thiss, 0, 0);
+                //self.xPos += e.client_y();
+                //self.yPos += e.client_x() - 500;
+                //log!("DragStarted : {:?}", e.data_transfer().unwrap().effect_allowed());
+                //log::debug!("Update: {:?}", self.yPos);
+                
+                let pieceId = e.target().unwrap().unchecked_into::<HtmlInputElement>().id();
+                e.data_transfer().unwrap()
+                .set_data("text", e.target().unwrap()
+                .unchecked_into::<HtmlInputElement>().id().as_str());
+                let image = HtmlImageElement::new().unwrap();
+                image.set_src(&self.pieces.get(pieceId.as_str()).unwrap().2);
+                e.data_transfer().unwrap().set_drag_image(&image,0,0);
+                match pieceId.as_str()
+                {
+                    "p1"|"p2"|"p3"|"p4"|"p5"|"p6"|"p7"|"p8" => 
+                    {
+                        for(key, value) in self.availableMoves.iter_mut(){
+                            value.0 = false;
+                        }
+                    
+
+                        let pawnYMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().1 + self.pawnOneBL.yMove;
+                        let pawnxPos = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let pawnyPos = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        //log!("{}", );
+                        for(key, value) in self.availableMoves.iter_mut(){
+                    
+                        //pawn
+                        //y+100
+                            
+                            if(value.1 == pawnxPos && value.2 == pawnYMoveForward)
+                            && !(self.availablePieceMoves.contains(&(pawnxPos, pawnYMoveForward)))
+                            {
+                                value.0 = true;
+                            }
+                            if(value.1 == pawnxPos && value.2 == pawnyPos + pawnYMoveForward && pawnyPos == 100)
+                            && !(self.availablePieceMoves.contains(&(pawnxPos, pawnyPos + pawnYMoveForward)))
+                            {
+                                value.0 = true;
+                            }
+                        }
+
+                    },
+
+
+                    "P1"|"P2"|"P3"|"P4"|"P5"|"P6"|"P7"|"P8" => 
+                    {
+                        for(key, value) in self.availableMoves.iter_mut(){
+                            value.0 = false;
+                        }
+                        let pawnYMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().1 - self.pawnOneWH.yMove;
+                        let pawnxPos = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let pawnyPos = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        //log!("{}", );
+                        for(key, value) in self.availableMoves.iter_mut(){
+                    
+                        
+                            
+                            if(value.1 == pawnxPos && value.2 == pawnYMoveForward)
+                            && !(self.availablePieceMoves.contains(&(pawnxPos, pawnYMoveForward)))
+                            {
+                                value.0 = true;
+                            }
+                            if(value.1 == pawnxPos && value.2 == pawnYMoveForward - self.pawnOneWH.yMove&& pawnyPos == 600)
+                            && !(self.availablePieceMoves.contains(&(pawnxPos, pawnYMoveForward - self.pawnOneWH.yMove)))
+                            && !(self.availablePieceMoves.contains(&(pawnxPos, pawnYMoveForward)))
+
+                            {
+                                value.0 = true;
+                            }
+                        }
+                        log!("{} and {}", self.pawnOneWH.yMove, pawnyPos);
+
+                    },
+
+
+
+
+                    //King start
+                    "k" => 
+                    {
+                        for(key, value) in self.availableMoves.iter_mut()
+                        {
+                            value.0 = false;
+                        }
+                        let kingXMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().0 + self.kingBL.xMove;
+                        let kingYMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().1 + self.kingBL.yMove;
+                        let kingXMoveBackwards = self.pieces.get_mut(pieceId.as_str()).unwrap().0 - self.kingBL.xMove;
+                        let kingYMoveBackwards = self.pieces.get_mut(pieceId.as_str()).unwrap().1 - self.kingBL.yMove;
+                        let kingxPos = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let kingyPos = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+
+                        for(key, value) in self.availableMoves.iter_mut(){
+                            
+                            if ((value.1 == kingXMoveForward && value.2 == kingyPos) 
+                            && !(self.availablePieceMoves.contains(&(kingXMoveForward, kingyPos))))
+
+                            || (value.1 == kingXMoveBackwards && value.2 == kingyPos)
+                            && !(self.availablePieceMoves.contains(&(kingXMoveBackwards, kingyPos)))
+
+                            || (value.1 == kingxPos && value.2 == kingYMoveForward)
+                            && !(self.availablePieceMoves.contains(&(kingxPos, kingYMoveForward)))
+
+                            || (value.1 == kingxPos && value.2 == kingYMoveBackwards)
+                            && !(self.availablePieceMoves.contains(&(kingxPos, kingYMoveBackwards)))
+
+                            || (value.1 == kingXMoveForward && value.2 == kingYMoveForward)
+                            && !(self.availablePieceMoves.contains(&(kingXMoveForward, kingYMoveForward)))
+
+                            || (value.1 == kingXMoveBackwards && value.2 == kingYMoveBackwards)
+                            && !(self.availablePieceMoves.contains(&(kingXMoveBackwards, kingYMoveBackwards))) 
+
+                            || (value.1 == kingXMoveForward && value.2 == kingYMoveBackwards)
+                            && !(self.availablePieceMoves.contains(&(kingXMoveForward, kingYMoveBackwards)))
+
+                            || (value.1 == kingXMoveBackwards && value.2 == kingYMoveForward)
+                            && !(self.availablePieceMoves.contains(&(kingXMoveBackwards, kingYMoveForward)))
+                            {
+                                value.0 = true;
+                            }
+                        }
+                    },
+
+                    "r1" | "r2" | "R1" | "R2" =>
+                    {
+                        for(key, value) in self.availableMoves.iter_mut()
+                        {
+                            value.0 = false;
+                        }
+
+                        let mut rookXMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let mut rookYMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        let mut rookXMoveBackwards = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let mut rookYMoveBackwards = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        let rookXPos = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let rookYPos = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        
+                        while(true)
+                        {
+                            rookYMoveForward += self.rookBL.yMove;
+                            if self.availablePieceMoves.contains(&(rookXPos, rookYMoveForward))
+                            {
+                                rookYMoveForward-= self.rookBL.yMove;
+                                break;
+                            }
+                            if rookYMoveForward > 700
+                            {
+                                rookYMoveForward = 700;
+                                break;
+                            }
+                        }
+
+                        while(true)
+                        {
+                            rookYMoveBackwards -= self.rookBL.yMove;
+                            if self.availablePieceMoves.contains(&(rookXPos, rookYMoveBackwards))
+                            {
+                                rookYMoveBackwards += self.rookBL.yMove;
+                                break;
+                            }
+                            if rookYMoveBackwards < 0
+                            {
+                                rookYMoveBackwards = 0;
+                                break;
+                            }
+                            
+                        }
+                        
+                        while(true)
+                        {
+                            rookXMoveForward += self.rookBL.xMove;
+                            if self.availablePieceMoves.contains(&(rookXMoveForward, rookYPos))
+                            {
+                                rookXMoveForward-= self.rookBL.xMove;
+                                break;
+                            }
+                            if rookXMoveForward > 700
+                            {
+                                rookXMoveForward = 700;
+                                break;
+                            }
+                        }
+                        
+                        while(true)
+                        {
+                            rookXMoveBackwards -= self.rookBL.xMove;
+                            if self.availablePieceMoves.contains(&(rookXMoveBackwards, rookYPos))
+                            {
+                                //THIS X TOOK ME 40 minutes
+                                rookXMoveBackwards += self.rookBL.xMove;
+                                break;
+                            }
+                            if rookXMoveBackwards < 0
+                            {
+                                rookXMoveBackwards = 0;
+                                break;
+                            }
+                        }
+                        for(key, value) in self.availableMoves.iter_mut(){
+                            
+                            if ((value.1 >= rookXMoveBackwards && value.1 <= rookXMoveForward) && value.1 != rookXPos && value.2 == rookYPos)
+                            || (value.1 == rookXPos && (value.2 >= rookYMoveBackwards && value.2 <= rookYMoveForward) && value.2 != rookYPos)
+                            {
+                                value.0 = true;
+                            }
+                        }
+                    },
+                    
+                    "b1" =>
+                    {
+                        for(key, value) in self.availableMoves.iter_mut()
+                        {
+                            value.0 = false;
+                        }
+
+                        let mut bishopXMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let mut bishopYMoveForward = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        let mut bishopXMoveBackwards = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let mut bishopYMoveBackwards = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        let bishopXPos = self.pieces.get_mut(pieceId.as_str()).unwrap().0;
+                        let bishopYPos = self.pieces.get_mut(pieceId.as_str()).unwrap().1;
+                        
+                        while(true)
+                        {
+                            bishopXMoveForward += self.bishopBL.xMove;
+                            bishopYMoveForward += self.bishopBL.yMove;
+                            if self.availablePieceMoves.contains(&(bishopXMoveForward, bishopYMoveForward))
+                            {
+                                bishopXMoveForward-= self.bishopBL.xMove;
+                                bishopYMoveForward-= self.bishopBL.yMove;
+                                break;
+                            }
+                            if bishopXMoveForward > 700 || bishopYMoveForward > 700
+                            {
+                                if(bishopXMoveForward > 700)
+                                {
+                                    bishopXMoveForward = 700;
+                                }
+
+                                if(bishopYMoveForward > 700)
+                                {
+                                    bishopYMoveForward = 700;
+                                }
+                                break;
+                            }
+                        }
+
+                        while(true)
+                        {
+                            bishopXMoveBackwards += self.bishopBL.xMove;
+                            bishopYMoveBackwards += self.bishopBL.yMove;
+                            if self.availablePieceMoves.contains(&(bishopXMoveForward, bishopYMoveForward))
+                            {
+                                bishopXMoveForward-= self.bishopBL.xMove;
+                                bishopYMoveForward-= self.bishopBL.yMove;
+                                break;
+                            }
+                            if bishopXMoveForward > 700 || bishopYMoveForward > 700
+                            {
+                                if(bishopXMoveForward > 700)
+                                {
+                                    bishopXMoveForward = 700;
+                                }
+
+                                if(bishopYMoveForward > 700)
+                                {
+                                    bishopYMoveForward = 700;
+                                }
+                                break;
+                            }
+                        }
+
+                        
+                        /*
+                        while(true)
+                        {
+                            rookYMoveBackwards -= self.rookBL.yMove;
+                            if self.availablePieceMoves.contains(&(rookXPos, rookYMoveBackwards))
+                            {
+                                rookYMoveBackwards += self.rookBL.yMove;
+                                break;
+                            }
+                            if rookYMoveBackwards < 0
+                            {
+                                rookYMoveBackwards = 0;
+                                break;
+                            }
+                            
+                        }
+                        
+                        while(true)
+                        {
+                            rookXMoveForward += self.rookBL.xMove;
+                            if self.availablePieceMoves.contains(&(rookXMoveForward, rookYPos))
+                            {
+                                rookXMoveForward-= self.rookBL.xMove;
+                                break;
+                            }
+                            if rookXMoveForward > 700
+                            {
+                                rookXMoveForward = 700;
+                                break;
+                            }
+                        }
+                        
+                        while(true)
+                        {
+                            rookXMoveBackwards -= self.rookBL.xMove;
+                            if self.availablePieceMoves.contains(&(rookXMoveBackwards, rookYPos))
+                            {
+                                rookXMoveBackwards += self.rookBL.xMove;
+                                break;
+                            }
+                            if rookXMoveBackwards < 0
+                            {
+                                rookXMoveBackwards = 0;
+                                break;
+                            }
+                        }*/
+                        for(key, value) in self.availableMoves.iter_mut(){
+                            
+                            /*if ((value.1 >= bishopXMoveBackwards && value.1 <= bishopXMoveForward) && value.1 != bishopXPos && value.2 == bishopYPos)
+                            || (value.1 == bishopXPos && (value.2 >= bishopYMoveBackwards && value.2 <= bishopYMoveForward) && value.2 != bishopYPos)
+                            {
+                                value.0 = true;
+                            }*/
+
+                            if((value.1 >= bishopXMoveBackwards && value.1 <= bishopXMoveForward) && value.1 != bishopXPos 
+                            && value.2 == bishopYMoveForward)
+                            {
+                                value.0 = true;
+                            }
+                        }
+                    }
+                    _=> log!("yes"),
+                }
+                self.currentDragging = pieceId;
+                
+                true
+            }
+
+            enumClick::DraggingOver(e) =>
+            {
+
+                //e.data_transfer().unwrap().set_drop_effect("all");
+                //e.data_transfer().unwrap().set_effect_allowed("all");
+                e.prevent_default();
+                //log!("{}", e.target().unwrap().unchecked_into::<HtmlInputElement>().id());
+                //log!("DragOver : {:?}", e.data_transfer());
+                //self.pawnOneBL.xPos = e.client_x();
+                //self.pawnOneBL.yPos = e.client_y();
+
+                true
+            }
+
+            enumClick::Dragging(e) =>
+            {
+                e.prevent_default();
+                //e.data_transfer().unwrap().set_drop_effect("all");
+                //e.data_transfer().unwrap().set_effect_allowed("all");
+                true
+            }
+
+            enumClick::ClickedMove(e) =>
+            {
+                log!("Here");
+                let data = e.data_transfer().unwrap().get_data("text").unwrap();
+                let cirId = e.target().unwrap().unchecked_into::<HtmlInputElement>().id().parse::<i32>().unwrap();
+                self.pieces.get_mut(&data).unwrap().0 = self.availableMoves.get(&cirId).unwrap().1;
+                self.pieces.get_mut(&data).unwrap().1 = self.availableMoves.get(&cirId).unwrap().2;
+
+                self.pieces.get_mut(&data).unwrap().0 = self.availableMoves.get(&cirId).unwrap().1;
+                self.pieces.get_mut(&data).unwrap().1 = self.availableMoves.get(&cirId).unwrap().2;
+                for(key, value) in self.availableMoves.iter_mut(){
+                    value.0 = false;
+                }
+
+                true
+            }
+
+            enumClick::ClickedMoveBoard(e) =>
+            {
+
+                e.prevent_default();
+                true
+            }
+            /*
+            enumClick::King=>{
+                //Show king moves on click
+                self.
+                true
+            }
+            enumClick::Queen=>{
+                //Show king moves on click
+                true
+            }
+            enumClick::Rook=>{
+                //Show king moves on click
+                true
+            }
+            enumClick::Bishop=>{
+                //Show king moves on click
+                true
+            }
+            enumClick::Knight=>{
+                //Show king moves on click
+                true
+            }*/
+            /*enumClick::Pawn=>{
+                //Show king moves on click
+                true
+            }*/
+            
+        }
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html{
+        let link = ctx.link();
+        let startX = -100;
+        let startY = -100;
+        
+        
+        html!{
+            <div class="container" style="position:relative">
+                /*<img src="images/KingBL.svg" onclick={link.callback(|_| enumClick::Clicking)} />
+                <p>{self.counter}</p>
+                <h1>{"John"}</h1>*/
+        //center the thing
+
+        <svg width="800" height="800" viewport="0 0 800 800" 
+        //ondrop = {link.callback(|e| enumClick::Dragging(e))} 
+        //ondragover={link.callback(|e| enumClick::ClickedMoveBoard(e))}
+        
+        >
+            <rect x="0" y="0" width="100" height = "100" style="fill:#cd9575"/>
+
+            //LOOP THROUGH START POS AND PUT PIECES ON BOARD
+            
+            <rect x="100" y="0" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="200" y="0"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="300" y="0" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="400" y="0" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="500" y="0"  width="100" height = "100" style ="fill:#3d2b1f"/>
+            //<image href="images/QueenBL.svg" height="100" width="100" ondragstart={link.callback(|e| enumClick::DraggingStart(e))} />
+            <rect x="600" y="0" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="700" y="0"  width="100" height = "100" style ="fill:#3d2b1f"/>
+
+
+            <rect x="0" y="100" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="100" y="100" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="200" y="100"  width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="300" y="100" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="400" y="100" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="500" y="100"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="600" y="100" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="700" y="100"  width="100" height = "100" style="fill:#cd9575"/>
+            
+            <rect x="0" y="200" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="100" y="200" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="200" y="200"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="300" y="200" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="400" y="200" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="500" y="200"  width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="600" y="200" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="700" y="200"  width="100" height = "100" style ="fill:#3d2b1f"/>
+
+            <rect x="0" y="300" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="100" y="300" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="200" y="300"  width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="300" y="300" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="400" y="300" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="500" y="300"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="600" y="300" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="700" y="300"  width="100" height = "100" style="fill:#cd9575"/>
+
+            <rect x="0" y="400" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="100" y="400" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="200" y="400"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="300" y="400" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="400" y="400" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="500" y="400"  width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="600" y="400" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="700" y="400"  width="100" height = "100" style ="fill:#3d2b1f"/>
+
+            <rect x="0" y="500" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="100" y="500" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="200" y="500"  width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="300" y="500" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="400" y="500" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="500" y="500"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="600" y="500" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="700" y="500"  width="100" height = "100" style="fill:#cd9575"/>
+
+            <rect x="0" y="600" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="100" y="600" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="200" y="600"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="300" y="600" width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="400" y="600" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="500" y="600"  width="100" height = "100" style ="fill:#3d2b1f"/>
+            <rect x="600" y="600" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="700" y="600"  width="100" height = "100" style ="fill:#3d2b1f"/>
+
+            <rect x="0" y="700" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="100" y="700" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="200" y="700"  width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="300" y="700" width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="400" y="700" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="500" y="700"  width="100" height = "100" style="fill:#cd9575"/>
+            <rect x="600" y="700" width="100" height = "100"  style ="fill:#3d2b1f"/>
+            <rect x="700" y="700"  width="100" height = "100" style="fill:#cd9575"/>
+            </svg>
+
+            {self.pieces.iter().map
+                (|(key, piece)| html!{<img src={(piece.2).to_string()} 
+                    height="100" width="100" 
+                    draggable="true"
+                    style = {
+                        
+                        format!("top:{}px; left:{}px; position:absolute;", (piece.1).to_string(), (piece.0 + 11).to_string())
+                        
+                    }
+                    x={(piece.0).to_string()} y={(piece.1).to_string()} 
+                    id={(key).to_string()} 
+                    ondragstart={link.callback(|e| {enumClick::DraggingStart(e)})}
+                    />})
+                .collect::<Html>()}
+
+            {self.availableMoves.iter().map
+                (|(key, value)| html!{
+                    <img src="/images/GreenCircle.svg"
+                    id = {(key).to_string()}
+                    height ="30"    
+                    //Move piece there on drop
+                    ondrop={link.callback(|e| {enumClick::ClickedMove(e)})}
+                    ondragover={link.callback(|e| {enumClick::DraggingOver(e)})}
+                    style={
+                        if(value.0)
+                        {
+                            format!("top:{}px;left:{}px;visibility:visible; position:absolute;", value.2 + 35, value.1 + 47)
+                        }
+                        else
+                        {
+                            format!("top:{}px;left:{}px;visibility:hidden; position:absolute;", value.2 + 35, value.1 + 47)
+                        }
+                    }/>
+                })
+                .collect::<Html>()}
+
+
+                </div>
+        }
+    }
+}
+
+fn main() {
+    //let document = document();
+    //let main_container = document.query_selector("#main_container").unwrap().unwrap();
+
+    //yew::start_app_in_element::<App>(main_container);
+    yew::start_app::<Clicker>();
+}
+
+
+
+
+
+
+
+
+
